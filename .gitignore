@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+cedibi/settings.py
+.ides/*
+.idea/
+.idea/.gitignore
+.idea/cedibi.iml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+images/*
