@@ -10,24 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os
+# import os
+import environ
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = environ.Path(__file__) - 2
+env = environ.Env()
+env_file = str(ROOT_DIR.path('.env'))
+print('Loading : {}'.format(env_file))
+env.read_env(env_file)
+print('The .env file has been loaded.')
 
+# environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'rjwu#cf)%@&&ohj+f%boly44!@!!xis#1rls5#^t-+!z_zyu1d'
-
+SECRET_KEY = env.str('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = env.list('HOSTS')
+print('HOSTS : {}'.format(ALLOWED_HOSTS))
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +46,8 @@ INSTALLED_APPS = [
     'etl.apps.EtlConfig',
     'oauth2_provider',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework_swagger',
 
 ]
 
@@ -84,11 +89,11 @@ WSGI_APPLICATION = 'cedibi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': 'project_cedibi_db',
+        'USER': env.str('USER_DB', default='root'),
+        'PASSWORD': env.str('PASS_DB', default=''),
+        'HOST': env.str('HOST_DB', default='localhost'),
+        'PORT': env.str('PORT_DB', default='3306'),
     }
 }
 
@@ -114,7 +119,8 @@ AUTH_PASSWORD_VALIDATORS = [
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
     'SCOPES': {'read': 'Read scope',
-               'write': 'Write scope'
+               'write': 'Write scope',
+               'users': 'Access to your usress'
                }
 }
 
@@ -125,14 +131,22 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_SCHEMA_CLASS':
-        'rest_framework.schemas.coreapi.AutoSchema'
-    ,
+        'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ]
+}
+
+SWAGGER_SETTINGS = {
+    'LOGIN_URL': 'rest_framework:login',
+    'LOGOUT_URL': 'rest_framework:logout',
+    'USE_SESSION_AUTH': True,
+    'DOC_EXPANSION': 'list',
+    'APIS_SORTER': 'alpha',
+    'SECURITY_DEFINITIONS': None,
 }
 
 
@@ -152,6 +166,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
+STATIC_ROOT = str(ROOT_DIR.path('static'))
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'account.User'
