@@ -43,12 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'account.apps.AccountConfig',
     'analytics.apps.AnalyticsConfig',
+    'core.apps.CoreConfig',
     'etl.apps.EtlConfig',
     'oauth2_provider',
     'rest_framework',
     'corsheaders',
     'rest_framework_swagger',
-
 ]
 
 MIDDLEWARE = [
@@ -61,6 +61,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = env.bool('CORS')
 
 ROOT_URLCONF = 'cedibi.urls'
 
@@ -153,7 +155,7 @@ SWAGGER_SETTINGS = {
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'UTC'
 
