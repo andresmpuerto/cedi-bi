@@ -8,7 +8,10 @@ class TypeBoardAdmin(admin.ModelAdmin):
 
 class BoardAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'type', 'status', 'rol']
-    list_display = ('name', 'description', 'type', 'created_at')
+    list_display = ('name', 'description', 'rol_name', 'created_at')
+
+    def rol_name(self, obj):
+        return list(obj.rol.all())
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -18,4 +21,4 @@ class CommentAdmin(admin.ModelAdmin):
 
 admin.site.register(TypeBoard, TypeBoardAdmin)
 admin.site.register(Board, BoardAdmin)
-admin.site.register(Comment, CommentAdmin)
+# admin.site.register(Comment, CommentAdmin)

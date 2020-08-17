@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from account.models import Rol
 from account.serializers import UserDataSerializer
-from analytics.models import Board, Comment, TypeBoard
+from analytics.models import Board, Comment, TypeBoard, DashboardCedi
 
 
 class TypeBoardSerializer(serializers.ModelSerializer):
@@ -45,3 +45,13 @@ class PostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['message', 'user', 'board']
+
+
+class BoardMixSerializer(serializers.ModelSerializer):
+    #  item_nr = serializers.SerializerMethodField()
+    class Meta:
+        model = DashboardCedi
+        fields = ['categoria_id', 'nom_categoria']
+
+    # def get_item_nr (self, obj):
+        # return Items.objects.filter(item_id=obj.id).count()

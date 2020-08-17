@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
+from django.db.models import Sum
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from analytics.models import Board, Comment
-from analytics.serializers import BoardSerializer, CommentSerializer, PostCommentSerializer
+from analytics.dataframe.DashboardCedi import MakeDataFrameCedi
+from analytics.models import Board, Comment, DashboardCedi
+from analytics.serializers import BoardSerializer, CommentSerializer, PostCommentSerializer, BoardMixSerializer
 
 
 class BoardListCreate(ListCreateAPIView):
@@ -60,3 +62,37 @@ def response_data(message, status=200, extra_data=None):
     if extra_data:
         data.update(extra_data)
     return Response(status=status, data=data)
+
+
+class OcupationBoard(ListAPIView):
+    parser_classes = [JSONParser]
+    permission_classes = (IsAuthenticatedOrTokenHasScope,)
+    required_scopes = ['read']
+
+    def get_queryset(self):
+        values = DashboardCedi.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+        return values
+
+    def list(self, request, *args, **kwargs):
+        pass
+
+
+class MainBoardMix(ListAPIView):
+    parser_classes = [JSONParser]
+    permission_classes = (IsAuthenticatedOrTokenHasScope,)
+    required_scopes = ['read']
+
+    def get_queryset(self):
+        values = DashboardCedi.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+        return values
+
+    def list(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = BoardMixSerializer(instance, many=True, )
+        # print(serializer)
+        cedi = MakeDataFrameCedi(list(instance))
+
+        data = dict(storage=cedi.frame_storage_cedi(), mix=cedi.frame_internal_external(),
+                    internal=cedi.frame_total_internal(), external=cedi.frame_total_external(),
+                    status=cedi.frame_total_status())
+        return response_data(message='success board mix', extra_data={'data': data})
