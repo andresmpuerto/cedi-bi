@@ -11,25 +11,6 @@ from account.models import User
 from account.serializers import UserSerializer, LoginSerializer, ProfileSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    Retrieve a user object
-    ---
-    request_serializer: .serializers.LoginSerializer
-    response_serializer: .serializers.UserSerializer
-
-    responseMessages:
-        - code: 201
-          message: Not authenticated
-        - code: 405
-          message: Method not allow
-        - code: 400
-          message: General Error
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-
-
 class UserList(RetrieveAPIView):
     """
         Return a list of all the existing users.
@@ -44,7 +25,9 @@ class UserList(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+        print(serializer)
         data = serializer.data
+        print(data)
         return response_data(message='success profile', extra_data={'user': data})
 
 

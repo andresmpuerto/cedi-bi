@@ -21,7 +21,7 @@ class Rol(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Roles"
+        verbose_name = "Role"
 
 
 def user_directory_path(instance, filename):
@@ -44,7 +44,7 @@ class Company(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Compañias"
+        verbose_name = "Compañia"
 
 
 class Profile(models.Model):
