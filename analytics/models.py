@@ -52,6 +52,8 @@ class DashboardCedi(models.Model):
     cod_marca = models.IntegerField()
     nom_marca = models.CharField(max_length=100)
     cod_articulo = models.DecimalField(max_digits=8, decimal_places=2)
+    nom_articulo = models.CharField(max_length=100)
+    dias_vencimiento = models.IntegerField()
     estiba_devolucion = models.DecimalField(max_digits=8, decimal_places=2)
     estiba_transito = models.DecimalField(max_digits=8, decimal_places=2)
     estiba_no_apta = models.DecimalField(max_digits=8, decimal_places=2)

@@ -78,6 +78,7 @@ class UploadAdmin(admin.ModelAdmin):
         dimension.dim_lineas()
         dimension.dim_marcas()
         dimension.dim_articulos()
+        dimension.dim_lotes()
 
     def create_fact(self, obj):
         table = fact.Fact(str(settings.ROOT_DIR)+'\\'+str(obj.file),

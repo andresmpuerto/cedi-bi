@@ -11,6 +11,13 @@ class BodegasDimTtemp(models.Model):
     categoria = models.ForeignKey(CategoriasBodegasDim, on_delete=models.DO_NOTHING, null=True)
 
 
+class LotesDimTtemp(models.Model):
+    cod_lote = models.CharField(max_length=10)
+    cod_articulo = models.CharField(max_length=10)
+    fecha_fab = models.IntegerField()
+    fecha_vencimiento = models.IntegerField()
+
+
 class NegociosDimTtemp(models.Model):
     cod_negocio = models.IntegerField()
     nom_negocio = models.CharField(max_length=100)
@@ -45,6 +52,13 @@ class BodegasDim(models.Model):
     categoria = models.ForeignKey(CategoriasBodegasDim, on_delete=models.DO_NOTHING)
 
 
+class LotesDim(models.Model):
+    cod_lote = models.CharField(max_length=10)
+    cod_articulo = models.CharField(max_length=10)
+    fecha_fab = models.IntegerField()
+    fecha_vencimiento = models.IntegerField()
+
+
 class NegociosDim(models.Model):
     cod_negocio = models.IntegerField()
     nom_negocio = models.CharField(max_length=100)
@@ -72,7 +86,7 @@ class ArticulosDim(models.Model):
     cod_marca = models.IntegerField()
 
 
-class FactAmacenamiento(models.Model):
+class FactAlmacenamiento(models.Model):
     cantidad_inicial = models.DecimalField(decimal_places=2, max_digits=8)
     cantidad_entradas = models.DecimalField(decimal_places=2, max_digits=8)
     cantidad_salidas = models.DecimalField(decimal_places=2, max_digits=8)

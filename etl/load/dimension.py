@@ -59,11 +59,6 @@ class Dimensions:
         # finally:
         #     session.close()
 
-    # result_as_list = result.fetchall()
-    # print(str(result_as_list))
-    # print(df.ID_NEGOCIO.count())
-    # print('Dimensión de negocios Cargada\n')
-
     # MAESTRA DE NEGOCIOS
     def dim_negocios(self):
         print('Creación de Dimension de Negocios')
@@ -113,7 +108,16 @@ class Dimensions:
         sql_query = sql.text("CALL cargar_articulos_dim;")
         self.engine.execute(sql_query)
 
-    # Mover_Archivo
-    # shutil.move(self.archivo,
-    # "D:/Users/dforrego/Documents/Documentos corporativos/OneDrive -
-    # Tecnoquimicas/UAO/2019-2/Proyecto/Entregas/Cargados")
+    def dim_lotes(self):
+        print('Creación de Dimension de Lotes')
+        df = pd.DataFrame(self.data[['COD_LOTE', 'COD_ARTICULO', 'FECHA_FAB', 'FECHA_VENCIMIENTO']])
+        df = df.drop_duplicates(['COD_LOTE', 'COD_ARTICULO', 'FECHA_FAB', 'FECHA_VENCIMIENTO'])[
+            ['COD_LOTE', 'COD_ARTICULO', 'FECHA_FAB', 'FECHA_VENCIMIENTO']]
+        print(df)
+        df.to_sql('core_lotesdimttemp',
+                  con=self.engine,
+                  if_exists='append',
+                  index=False, index_label=None,
+                  chunksize=10000)
+        sql_query = sql.text("CALL cargar_lotes_dim;")
+        self.engine.execute(sql_query)
