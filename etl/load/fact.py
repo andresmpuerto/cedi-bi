@@ -24,7 +24,7 @@ class Fact:
                                      'COD_LINEA', 'COD_MARCA',  'COD_ARTICULO'
                                      ]])
         # if (df.ID_NEGOCIO.count()) >= 1:
-        df.to_sql('core_factamacenamiento',
+        df.to_sql('core_factalmacenamiento',
                   con=self.engine,
                   if_exists='append',
                   index=False,

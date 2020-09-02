@@ -5,6 +5,8 @@ from django.db.models import Sum
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+
+from analytics.dataframe.BoardExpirations import BoardExpiration
 from analytics.dataframe.DashboardCedi import MakeDataFrameCedi
 from analytics.models import Board, Comment, DashboardCedi
 from analytics.serializers import BoardSerializer, CommentSerializer, PostCommentSerializer, BoardMixSerializer
@@ -30,7 +32,13 @@ class BoardObject(RetrieveAPIView):
         return get_object_or_404(values)
 
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        instance = self.get_queryset()
+        serialize = BoardSerializer(instance)
+        graphs = {}
+        if self.kwargs['pk'] is 2:  # vencimientos
+            graphs = Boards().expired_products()
+
+        return response_data(message='Board Vencimiento ', extra_data={'graphs': graphs, 'board': serialize.data})
 
 
 class CommentListCreate(ListCreateAPIView):
@@ -89,10 +97,49 @@ class MainBoardMix(ListAPIView):
     def list(self, request, *args, **kwargs):
         instance = self.get_queryset()
         serializer = BoardMixSerializer(instance, many=True, )
-        # print(serializer)
         cedi = MakeDataFrameCedi(list(instance))
 
         data = dict(storage=cedi.frame_storage_cedi(), mix=cedi.frame_internal_external(),
                     internal=cedi.frame_total_internal(), external=cedi.frame_total_external(),
                     status=cedi.frame_total_status())
         return response_data(message='success board mix', extra_data={'data': data})
+
+
+class Boards:
+
+    def get_queryset(self):
+        return DashboardCedi.objects.values("estibas", "dias_vencimiento")
+
+    def expired_products(self):
+        instance = self.get_queryset()
+        cedi = BoardExpiration()
+        q = list(instance)
+
+        q2 = DashboardCedi.objects \
+            .filter(estibas__gt=0, dias_vencimiento__lte=0) \
+            .values("nom_bodega", "nom_categoria") \
+            .annotate(Sum('estibas'))
+
+        # q3 = DashboardCedi.objects \
+        #     .filter(estibas__gt=0, dias_vencimiento__lte=0) \
+        #     .values("nom_negocio") \
+        #     .annotate(Sum('estibas'))
+        #
+        # q4 = DashboardCedi.objects \
+        #     .filter(estibas__gt=0, dias_vencimiento__lte=0) \
+        #     .values("nom_negocio", "nom_linea") \
+        #     .annotate(Sum('estibas'))
+
+        # q5 = DashboardCedi.objects \
+        #     .filter(estibas__gt=0, dias_vencimiento__lte=0) \
+        #     .values("nom_negocio", "nom_linea", "nom_articulo") \
+        #     .annotate(Sum('estibas'))
+
+        data = dict(
+            expired=cedi.frame_expired(q),
+            storage=cedi.frame_expired_storage(q2),
+            # business=cedi.frame_expired_business(q3),
+            # lines=cedi.frame_expired_line(q4),
+            # products=cedi.frame_expired_product(q5)
+        )
+        return data

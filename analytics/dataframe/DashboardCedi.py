@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from django.db.models import Sum
-from analytics.models import  DashboardCedi
+from analytics.models import DashboardCedi
 
 
 class MakeDataFrameCedi:

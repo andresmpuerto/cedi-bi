@@ -91,6 +91,9 @@ WSGI_APPLICATION = 'cedibi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        },
         'NAME': 'project_cedibi_db',
         'USER': env.str('USER_DB', default='root'),
         'PASSWORD': env.str('PASS_DB', default=''),
