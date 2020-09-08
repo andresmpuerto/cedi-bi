@@ -6,9 +6,17 @@ from rest_framework_swagger.views import get_swagger_view
 from analytics.views import BoardListCreate, BoardObject, CommentListCreate, MainBoardMix
 from account.views import login, logout, UserList
 
+from oauth2_provider.models import AccessToken, Application, Grant, RefreshToken
+
 API_TITLE = 'Documentación API CeDiBI'
 API_DESCRIPTION = 'API para el Análisis de Datos de empresas con Centros de Distribución'
 schema_view = get_swagger_view(title=API_TITLE)
+
+admin.site.site_header = 'Administración del CeDi BI'
+admin.site.unregister(AccessToken)
+admin.site.unregister(Grant)
+admin.site.unregister(RefreshToken)
+admin.site.unregister(Application)
 
 urlpatterns = [
     url('', admin.site.urls),
