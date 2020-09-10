@@ -5,10 +5,11 @@ from django.db.models import Sum
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-
+from account.models import Rol
 from analytics.dataframe.BoardExpirations import BoardExpiration
 from analytics.dataframe.DashboardCedi import MakeDataFrameCedi
-from analytics.models import Board, Comment, DashboardCedi
+from analytics.dataframe.DashboardBusiness import MakeDataFrameBusiness
+from analytics.models import Board, Comment, DashboardCedi, DashboardBusiness
 from analytics.serializers import BoardSerializer, CommentSerializer, PostCommentSerializer, BoardMixSerializer
 
 
@@ -91,13 +92,23 @@ class MainBoardMix(ListAPIView):
     required_scopes = ['read']
 
     def get_queryset(self):
-        values = DashboardCedi.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+        if self.kwargs['pk'] == 20:
+            values = DashboardCedi.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+        else:
+            values = DashboardBusiness.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+
         return values
 
     def list(self, request, *args, **kwargs):
         instance = self.get_queryset()
         serializer = BoardMixSerializer(instance, many=True, )
-        cedi = MakeDataFrameCedi(list(instance))
+        cod = self.kwargs['pk']
+        # roles = Rol.objects.all()
+        if cod == 20:
+            cedi = MakeDataFrameCedi(list(instance))
+        else:
+
+            cedi = MakeDataFrameBusiness(list(instance))
 
         data = dict(storage=cedi.frame_storage_cedi(), mix=cedi.frame_internal_external(),
                     internal=cedi.frame_total_internal(), external=cedi.frame_total_external(),
