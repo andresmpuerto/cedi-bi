@@ -4,9 +4,9 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class User(AbstractUser):
-    document_type = models.CharField(max_length=2)
-    document_id = models.CharField(max_length=15)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False)
+    document_type = models.CharField(max_length=2, verbose_name="Tipo de Documento")
+    document_id = models.CharField(max_length=15, verbose_name="Docuemnto de Identidad")
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False, verbose_name="Fecha de Creación")
     updated_at = models.DateTimeField(auto_now=True, blank=True, editable=False)
 
     def __str__(self):
@@ -14,8 +14,8 @@ class User(AbstractUser):
 
 
 class Rol(models.Model):
-    name = models.CharField(max_length=20)
-    code = models.IntegerField()
+    name = models.CharField(max_length=20, verbose_name="Nombre del Rol")
+    code = models.IntegerField(verbose_name="Código de Rol")
 
     def __str__(self):
         return self.name
@@ -29,15 +29,15 @@ def user_directory_path(instance, filename):
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=50)
-    nit = models.CharField(max_length=9)
-    logo = models.ImageField(upload_to=user_directory_path)
-    description = models.CharField(max_length=9)
-    status = models.BooleanField(default=True)
-    contact_name = models.CharField(max_length=30)
-    contact_email = models.CharField(max_length=40)
-    contact_phone = models.CharField(max_length=30)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False)
+    name = models.CharField(max_length=50, verbose_name="Nombre de Compañia")
+    nit = models.CharField(max_length=9, verbose_name="N.I.T.")
+    logo = models.ImageField(upload_to=user_directory_path, verbose_name="Logo de la Compañia")
+    description = models.CharField(max_length=9, verbose_name="Actividad Economíca")
+    status = models.BooleanField(default=True, verbose_name="Activo")
+    contact_name = models.CharField(max_length=30, verbose_name="Nombre de COntacto")
+    contact_email = models.CharField(max_length=40, verbose_name="Email de contacto")
+    contact_phone = models.CharField(max_length=30, verbose_name="Celular de Contactp")
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False, verbose_name="Fecha de Creación")
     updated_at = models.DateTimeField(auto_now=True, blank=True, editable=False)
 
     def __str__(self):
@@ -48,12 +48,12 @@ class Company(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    rol = models.ForeignKey(Rol, on_delete=models.PROTECT)
-    phone = models.CharField(max_length=12)
-    company = models.ForeignKey(Company, on_delete=models.PROTECT)
-    active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE, verbose_name="Usuario")
+    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, verbose_name="Rol de Usuario")
+    phone = models.CharField(max_length=12, verbose_name="Número Celular")
+    company = models.ForeignKey(Company, on_delete=models.PROTECT, verbose_name="Compañia")
+    active = models.BooleanField(default=True, verbose_name="Activo")
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False, verbose_name="Fecha de Creación")
     updated_at = models.DateTimeField(auto_now=True, blank=True, editable=False)
 
     def __str__(self):

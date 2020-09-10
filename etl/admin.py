@@ -21,16 +21,24 @@ class UploadAdmin(admin.ModelAdmin):
     list_display = ('name', 'company_nit', 'status_code', 'status_type', 'status_description', 'created_at')
 
     def company_nit(self, obj):
-        return obj.company.nit
+        return obj.company.nit + ' - ' + obj.company.name
+
+    company_nit.short_description = u'Empresa'
 
     def status_code(self, obj):
         return obj.status.code
 
+    status_code.short_description = u'Código de Error'
+
     def status_type(self, obj):
         return obj.status.type.name
 
+    status_type.short_description = u'Tipo de Error'
+
     def status_description(self, obj):
         return obj.status.description
+
+    status_description.short_description = u'Descripción'
 
     def save_model(self, request, obj, form, change):
         super(UploadAdmin, self).save_model(request, obj, form, change)
