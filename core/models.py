@@ -98,7 +98,7 @@ class FactAlmacenamiento(models.Model):
     cantidad_transito = models.DecimalField(decimal_places=2, max_digits=8)
     cantidad_no_apta = models.DecimalField(decimal_places=2, max_digits=8)
     fecha_registro = models.CharField(max_length=8)
-    cod_bodega = models.IntegerField()
+    cod_bodega = models.CharField(max_length=10)
     cod_negocio = models.IntegerField()
     cod_linea = models.IntegerField()
     cod_marca = models.CharField(max_length=10)
