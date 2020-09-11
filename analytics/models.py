@@ -41,7 +41,7 @@ class Comment(models.Model):
 
 
 class DashboardCedi(models.Model):
-    cod_bodega = models.IntegerField()
+    cod_bodega = models.CharField(max_length=10)
     nom_bodega = models.CharField(max_length=100)
     categoria_id = models.IntegerField()
     nom_categoria = models.CharField(max_length=100)
@@ -66,7 +66,7 @@ class DashboardCedi(models.Model):
 
 
 class DashboardBusiness(models.Model):
-    cod_bodega = models.IntegerField()
+    cod_bodega = models.CharField(max_length=10)
     nom_bodega = models.CharField(max_length=100)
     categoria_id = models.IntegerField()
     nom_categoria = models.CharField(max_length=100)
