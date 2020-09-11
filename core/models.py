@@ -42,7 +42,7 @@ class ArticulosDimTtemp(models.Model):
     unidad_venta = models.IntegerField()
     factor_estiba = models.DecimalField(decimal_places=2, max_digits=8)
     inventario_seguridad = models.IntegerField(null=True)
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
 
 
 # ###################
@@ -83,7 +83,7 @@ class ArticulosDim(models.Model):
     unidad_venta = models.IntegerField()
     factor_estiba = models.DecimalField(decimal_places=2, null=True, max_digits=8)
     inventario_seguridad = models.IntegerField(null=True)
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
 
 
 class FactAlmacenamiento(models.Model):
@@ -101,5 +101,5 @@ class FactAlmacenamiento(models.Model):
     cod_bodega = models.IntegerField()
     cod_negocio = models.IntegerField()
     cod_linea = models.IntegerField()
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
     cod_articulo = models.IntegerField()
