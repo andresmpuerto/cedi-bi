@@ -71,7 +71,7 @@ class LineasDim(models.Model):
 
 
 class MarcasDim(models.Model):
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
     nom_marca = models.CharField(max_length=100)
     cod_linea = models.IntegerField()
 

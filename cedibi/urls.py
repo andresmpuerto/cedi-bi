@@ -12,6 +12,7 @@ API_TITLE = 'Documentación API CeDiBI'
 API_DESCRIPTION = 'API para el Análisis de Datos de empresas con Centros de Distribución'
 schema_view = get_swagger_view(title=API_TITLE)
 
+admin.site.site_title = 'CeDi BI'
 admin.site.site_header = 'Administración del CeDi BI'
 admin.site.unregister(AccessToken)
 admin.site.unregister(Grant)
