@@ -84,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cedibi.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -101,7 +100,6 @@ DATABASES = {
         'PORT': env.str('PORT_DB', default='3306'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -154,7 +152,6 @@ SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': None,
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -168,9 +165,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_ROOT = str(ROOT_DIR.path('static'))
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'account.User'
+SEPARATOR_FILE = env.str('SEPARATOR', default='/')
+ROOT_DIR_SEPARATOR = str(ROOT_DIR) + str(SEPARATOR_FILE)

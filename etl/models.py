@@ -4,7 +4,7 @@ from account.models import Company
 
 
 def user_directory_path(instance, filename):
-    return 'csv/company_{0}/{1}'.format(instance.company.id, filename)
+    return 'csv/data/company_{0}/{1}'.format(instance.company.id, filename)
 
 
 class ErrorType(models.Model):

@@ -1,8 +1,31 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
+
+from account.models import Company
+
+
+def user_directory_path(instance, filename):
+    return 'csv/template/company_{0}/{1}'.format(instance.company.id, filename)
 
 
 class CategoriasBodegasDim(models.Model):
-    nom_categoria = models.CharField(max_length=100)
+    nom_categoria = models.CharField(max_length=100, verbose_name='Nombre de Categoría')
+
+    class Meta:
+        verbose_name = 'Categorías de Bodega'
+
+
+class UploadTemplaCSV(models.Model):
+    file = models.FileField(upload_to=user_directory_path,
+                            validators=[FileExtensionValidator(['csv'])],
+                            verbose_name="Archivo Plantilla .csv"
+                            )
+    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, verbose_name='Compañía')
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False, verbose_name="Fecha de Carga")
+    updated_at = models.DateTimeField(auto_now=True, blank=True, editable=False)
+
+    class Meta:
+        verbose_name = 'Cargar Plantilla CSV'
 
 
 class BodegasDimTtemp(models.Model):

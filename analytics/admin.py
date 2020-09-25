@@ -13,6 +13,8 @@ class BoardAdmin(admin.ModelAdmin):
     def rol_name(self, obj):
         return list(obj.rol.all())
 
+    rol_name.short_description = u'Roles Permitidos'
+
 
 class CommentAdmin(admin.ModelAdmin):
     fields = ['message', 'user', 'board']
