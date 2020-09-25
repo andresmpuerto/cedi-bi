@@ -58,12 +58,12 @@ class MakeDataFrameCedi:
         total_estibas_no_apta = df2[['no_apta']].sum()
         print('Estibas Mci No_APTA : ' + str(total_estibas_no_apta))
         # ----
-        df3 = self.df[self.df.name.isin(['Interno Devoluciones'])]
-        total_estibas_dev_int = df3[['count']].sum()
+        df3 = self.df[self.df.nom_categoria.isin(['Interno Devoluciones'])]
+        total_estibas_dev_int = df3[['estibas']].sum()
         total_estibas_dev_int = (int(round(total_estibas_dev_int)))
         # ---
-        df4 = self.df[self.df.name.isin(['Externo Devoluciones'])]
-        total_estibas_dev_ext = df4[['count']].sum()
+        df4 = self.df[self.df.nom_categoria.isin(['Externo Devoluciones'])]
+        total_estibas_dev_ext = df4[['estibas']].sum()
         total_estibas_dev_ext = (int(round(total_estibas_dev_ext)))
         total_estibas_dev = total_estibas_dev_int + total_estibas_dev_ext
         print('Estibas Mci Devuelta : ' + str(total_estibas_dev))
