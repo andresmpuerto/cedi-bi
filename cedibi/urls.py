@@ -4,6 +4,7 @@ from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework_swagger.views import get_swagger_view
 from analytics.views import BoardListCreate, BoardObject, CommentListCreate, MainBoardMix
+from core.views import OccupationBoardObject
 from account.views import login, logout, UserList
 
 from oauth2_provider.models import AccessToken, Application, Grant, RefreshToken
@@ -30,6 +31,7 @@ urlpatterns = [
     path('api/v1/boards/<int:pk>/comments', CommentListCreate.as_view()),
     # #####
     path('api/v1/roles/<int:pk>/dashboard', MainBoardMix.as_view()),
+    path('api/v1/boards/occupation', OccupationBoardObject.as_view()),
     # ######
     path('api/v1', include('rest_framework.urls', namespace='rest_framework')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),

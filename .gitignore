@@ -138,4 +138,5 @@ dmypy.json
 .idea/vcs.xml
 images/*
 static/*
-csv/company_1/
+csv/data/*
+csv/template/*

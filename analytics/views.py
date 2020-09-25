@@ -93,9 +93,14 @@ class MainBoardMix(ListAPIView):
 
     def get_queryset(self):
         if self.kwargs['pk'] == 20:
-            values = DashboardCedi.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+            values = DashboardCedi.objects\
+                .filter(estibas__gt=0)\
+                .values("categoria_id", "nom_categoria", "estibas", "cod_bodega", "nom_bodega")
         else:
-            values = DashboardBusiness.objects.values("categoria_id", "nom_categoria").annotate(Sum('estibas'))
+            values = DashboardBusiness.objects \
+                .filter(estibas__gt=0) \
+                .values("categoria_id", "nom_categoria", "estibas", "cod_bodega", "nom_bodega", "sku_transito",
+                        "sku_no_apta")
 
         return values
 
@@ -105,14 +110,17 @@ class MainBoardMix(ListAPIView):
         cod = self.kwargs['pk']
         # roles = Rol.objects.all()
         if cod == 20:
-            cedi = MakeDataFrameCedi(list(instance))
+            records = MakeDataFrameCedi(list(instance))
         else:
+            records = MakeDataFrameBusiness(list(instance))
 
-            cedi = MakeDataFrameBusiness(list(instance))
-
-        data = dict(storage=cedi.frame_storage_cedi(), mix=cedi.frame_internal_external(),
-                    internal=cedi.frame_total_internal(), external=cedi.frame_total_external(),
-                    status=cedi.frame_total_status())
+        data = dict(
+                    storage=records.frame_storage_cedi(),
+                    mix=records.frame_internal_external(),
+                    internal=records.frame_total_internal(),
+                    external=records.frame_total_external(),
+                    status=records.frame_total_status()
+                    )
         return response_data(message='success board mix', extra_data={'data': data})
 
 
