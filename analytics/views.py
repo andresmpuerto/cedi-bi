@@ -121,6 +121,7 @@ class MainBoardMix(ListAPIView):
             external=records.frame_total_external(),
             status=records.frame_total_status()
         )
+
         return response_data(message='success board mix', extra_data={'data': data})
 
 

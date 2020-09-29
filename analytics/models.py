@@ -3,8 +3,8 @@ from account.models import Rol
 
 
 class TypeBoard(models.Model):
-    name = models.CharField(max_length=20)
-    code = models.IntegerField()
+    name = models.CharField(max_length=20, verbose_name="Tipo tablero")
+    code = models.IntegerField(verbose_name="Código de tipo tablero")
 
     class Meta:
         verbose_name = "Tipos de Tablero"
@@ -14,12 +14,12 @@ class TypeBoard(models.Model):
 
 
 class Board(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=120)
-    type = models.ForeignKey(TypeBoard, on_delete=models.DO_NOTHING)
-    status = models.BooleanField(default=True)
-    rol = models.ManyToManyField(Rol, related_name='boards')
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False)
+    name = models.CharField(max_length=50, verbose_name="Nombre Tablero")
+    description = models.CharField(max_length=120, verbose_name="Descripción Tablero")
+    type = models.ForeignKey(TypeBoard, on_delete=models.DO_NOTHING, verbose_name="Tipo de Tablero")
+    status = models.BooleanField(default=True, verbose_name="Activo")
+    rol = models.ManyToManyField(Rol, related_name='boards', verbose_name="Roles permitidos")
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False, verbose_name="Fecha de Creación")
     updated_at = models.DateTimeField(auto_now=True, blank=True, editable=False)
 
     class Meta:
@@ -41,15 +41,15 @@ class Comment(models.Model):
 
 
 class DashboardCedi(models.Model):
-    cod_bodega = models.IntegerField()
+    cod_bodega = models.CharField(max_length=10)
     nom_bodega = models.CharField(max_length=100)
     categoria_id = models.IntegerField()
     nom_categoria = models.CharField(max_length=100)
     cod_negocio = models.IntegerField()
     nom_negocio = models.CharField(max_length=100)
-    cod_line = models.IntegerField()
+    cod_linea = models.IntegerField()
     nom_linea = models.CharField(max_length=100)
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
     nom_marca = models.CharField(max_length=100)
     cod_articulo = models.DecimalField(max_digits=8, decimal_places=2)
     nom_articulo = models.CharField(max_length=100)
@@ -87,4 +87,8 @@ class DashboardBusiness(models.Model):
 
     class Meta:
         managed = False
+<<<<<<< HEAD
         db_table = 'general_almacenamiento_sku'
+=======
+        db_table = 'general_almacenamiento_sku'
+>>>>>>> origin/develop

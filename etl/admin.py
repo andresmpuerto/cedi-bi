@@ -1,4 +1,7 @@
+from django import forms
 from django.contrib import admin
+
+from core.models import UploadTemplaCSV
 from etl.models import Upload, ErrorLog, ErrorType
 import etl.transform.validate as validate
 import etl.load.dimension as dim
@@ -19,22 +22,36 @@ class ErrorLogAdmin(admin.ModelAdmin):
 class UploadAdmin(admin.ModelAdmin):
     fields = ['name', 'file', 'min', 'max', 'separator', 'company']
     list_display = ('name', 'company_nit', 'status_code', 'status_type', 'status_description', 'created_at')
+    actions = None
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def company_nit(self, obj):
-        return obj.company.nit
+        return obj.company.nit + ' - ' + obj.company.name
+
+    company_nit.short_description = u'Empresa'
 
     def status_code(self, obj):
         return obj.status.code
 
+    status_code.short_description = u'Código de Error'
+
     def status_type(self, obj):
         return obj.status.type.name
+
+    status_type.short_description = u'Tipo de Error'
 
     def status_description(self, obj):
         return obj.status.description
 
+    status_description.short_description = u'Descripción'
+
     def save_model(self, request, obj, form, change):
         super(UploadAdmin, self).save_model(request, obj, form, change)
-        # TODO copiar codigo Diego
         code = self.validate_file(obj)
         if code is 0:
             self.create_dimensions(obj)
@@ -50,7 +67,9 @@ class UploadAdmin(admin.ModelAdmin):
 
     def validate_file(self, obj):
         # VALIDACIONES DE ARCHIVO
-        val = validate.ValidateCsv(str(settings.ROOT_DIR)+'\\'+str(obj.file), obj.separator, obj.min, obj.max)
+        val = validate.ValidateCsv(
+            str(settings.ROOT_DIR_SEPARATOR) + str(obj.file), obj.separator, obj.min, obj.max
+        )
         # Validación 1: valida el separador del archivo
         if val.is_separator() is False:
             return 1002  # separador icorrecto
@@ -58,7 +77,9 @@ class UploadAdmin(admin.ModelAdmin):
         if val.has_correct_size() is False:
             return 1003  # cntidad de registros nocumple
         # Validación 3: valida la cantidad, ORDEN Y NOMBRES de columnas  contra el archivo plantilla
-        if val.has_template(str(settings.ROOT_DIR)+'\\csv\\template.csv') is False:
+        template = UploadTemplaCSV.objects.get(company=obj.company.pk)
+        template_url = str(settings.ROOT_DIR_SEPARATOR) + str(template.file)
+        if val.has_template(template_url) is False:
             return 1004  # columnas incorrectas
         # Validación 4: valida datos nulos
         if val.is_null() is False:
@@ -67,12 +88,13 @@ class UploadAdmin(admin.ModelAdmin):
         return 0
 
     def create_dimensions(self, obj):
-        dimension = dim.Dimensions(str(settings.ROOT_DIR)+'\\'+str(obj.file),
+        dimension = dim.Dimensions(str(settings.ROOT_DIR_SEPARATOR) + str(obj.file),
                                    obj.separator,
                                    [settings.DATABASES['default']['USER'],
                                     settings.DATABASES['default']['PASSWORD'],
                                     settings.DATABASES['default']['HOST'],
-                                    settings.DATABASES['default']['NAME']])
+                                    settings.DATABASES['default']['NAME']]
+                                   )
         dimension.dim_bodegas()
         dimension.dim_negocios()
         dimension.dim_lineas()
@@ -81,7 +103,7 @@ class UploadAdmin(admin.ModelAdmin):
         dimension.dim_lotes()
 
     def create_fact(self, obj):
-        table = fact.Fact(str(settings.ROOT_DIR)+'\\'+str(obj.file),
+        table = fact.Fact(str(settings.ROOT_DIR_SEPARATOR) + str(obj.file),
                           obj.separator,
                           [settings.DATABASES['default']['USER'],
                            settings.DATABASES['default']['PASSWORD'],

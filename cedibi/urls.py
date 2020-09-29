@@ -4,11 +4,21 @@ from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework_swagger.views import get_swagger_view
 from analytics.views import BoardListCreate, BoardObject, CommentListCreate, MainBoardMix
+from core.views import OccupationBoardObject
 from account.views import login, logout, UserList
+
+from oauth2_provider.models import AccessToken, Application, Grant, RefreshToken
 
 API_TITLE = 'Documentación API CeDiBI'
 API_DESCRIPTION = 'API para el Análisis de Datos de empresas con Centros de Distribución'
 schema_view = get_swagger_view(title=API_TITLE)
+
+admin.site.site_title = 'CeDi BI'
+admin.site.site_header = 'Administración del CeDi BI'
+# admin.site.unregister(AccessToken)
+# admin.site.unregister(Grant)
+# admin.site.unregister(RefreshToken)
+# admin.site.unregister(Application)
 
 urlpatterns = [
     url('', admin.site.urls),
@@ -21,6 +31,7 @@ urlpatterns = [
     path('api/v1/boards/<int:pk>/comments', CommentListCreate.as_view()),
     # #####
     path('api/v1/roles/<int:pk>/dashboard', MainBoardMix.as_view()),
+    path('api/v1/boards/occupation/<int:pk>', OccupationBoardObject.as_view()),
     # ######
     path('api/v1', include('rest_framework.urls', namespace='rest_framework')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),

@@ -1,8 +1,31 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
+
+from account.models import Company
+
+
+def user_directory_path(instance, filename):
+    return 'csv/template/company_{0}/{1}'.format(instance.company.id, filename)
 
 
 class CategoriasBodegasDim(models.Model):
-    nom_categoria = models.CharField(max_length=100)
+    nom_categoria = models.CharField(max_length=100, verbose_name='Nombre de Categoría')
+
+    class Meta:
+        verbose_name = 'Categorías de Bodega'
+
+
+class UploadTemplaCSV(models.Model):
+    file = models.FileField(upload_to=user_directory_path,
+                            validators=[FileExtensionValidator(['csv'])],
+                            verbose_name="Archivo Plantilla .csv"
+                            )
+    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, verbose_name='Compañía')
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, editable=False, verbose_name="Fecha de Carga")
+    updated_at = models.DateTimeField(auto_now=True, blank=True, editable=False)
+
+    class Meta:
+        verbose_name = 'Cargar Plantilla CSV'
 
 
 class BodegasDimTtemp(models.Model):
@@ -30,7 +53,7 @@ class LineasDimTtemp(models.Model):
 
 
 class MarcasDimTtemp(models.Model):
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
     nom_marca = models.CharField(max_length=100)
     cod_linea = models.IntegerField()
 
@@ -42,7 +65,7 @@ class ArticulosDimTtemp(models.Model):
     unidad_venta = models.IntegerField()
     factor_estiba = models.DecimalField(decimal_places=2, max_digits=8)
     inventario_seguridad = models.IntegerField(null=True)
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
 
 
 # ###################
@@ -71,7 +94,7 @@ class LineasDim(models.Model):
 
 
 class MarcasDim(models.Model):
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
     nom_marca = models.CharField(max_length=100)
     cod_linea = models.IntegerField()
 
@@ -83,7 +106,7 @@ class ArticulosDim(models.Model):
     unidad_venta = models.IntegerField()
     factor_estiba = models.DecimalField(decimal_places=2, null=True, max_digits=8)
     inventario_seguridad = models.IntegerField(null=True)
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
 
 
 class FactAlmacenamiento(models.Model):
@@ -98,8 +121,8 @@ class FactAlmacenamiento(models.Model):
     cantidad_transito = models.DecimalField(decimal_places=2, max_digits=8)
     cantidad_no_apta = models.DecimalField(decimal_places=2, max_digits=8)
     fecha_registro = models.CharField(max_length=8)
-    cod_bodega = models.IntegerField()
+    cod_bodega = models.CharField(max_length=10)
     cod_negocio = models.IntegerField()
     cod_linea = models.IntegerField()
-    cod_marca = models.IntegerField()
+    cod_marca = models.CharField(max_length=10)
     cod_articulo = models.IntegerField()
