@@ -87,8 +87,4 @@ class DashboardBusiness(models.Model):
 
     class Meta:
         managed = False
-<<<<<<< HEAD
         db_table = 'general_almacenamiento_sku'
-=======
-        db_table = 'general_almacenamiento_sku'
->>>>>>> origin/develop

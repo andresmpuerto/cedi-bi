@@ -11,7 +11,7 @@ class MakeDataFrameBusiness:
     def frame_internal_external(self):
         df2 = self.df[['categoria_id', 'nom_categoria', 'estibas']]
         df2.columns = ['categoria_id', 'name', 'count']
-        df3 = df2.groupby(['categoria_id', 'name']).sum()
+        df3 = df2.groupby(['categoria_id', 'name'], as_index=False).sum()
         df3['y'] = df3['count'] / df3['count'].sum()
         df3.round({'y': 2})
         return {'records': df3.to_dict(orient='records'), 'total': df3['count'].sum()}
@@ -37,7 +37,7 @@ class MakeDataFrameBusiness:
         df2 = self.df[["cod_bodega", "nom_bodega", "nom_categoria", 'estibas']]
         df2.columns = ['bodega_id', 'name', 'type', 'count']
         print(df2)
-        df3 = df2.groupby(['bodega_id', 'name', 'type']).sum()
+        df3 = df2.groupby(['bodega_id', 'name', 'type'], as_index=False).sum()
         total_estibas = df3['count'].sum()
         df3['y'] = df3['count'] / total_estibas
         df3.round({'y': 2})
