@@ -63,3 +63,28 @@ class DashboardCedi(models.Model):
     class Meta:
         managed = False
         db_table = 'general_almacenamiento'
+
+
+class DashboardBusiness(models.Model):
+    cod_bodega = models.CharField(max_length=10)
+    nom_bodega = models.CharField(max_length=100)
+    categoria_id = models.IntegerField()
+    nom_categoria = models.CharField(max_length=100)
+    cod_negocio = models.IntegerField()
+    nom_negocio = models.CharField(max_length=100)
+    cod_linea = models.IntegerField()
+    nom_linea = models.CharField(max_length=100)
+    cod_marca = models.CharField(max_length=10)
+    nom_marca = models.CharField(max_length=100)
+    cod_articulo = models.DecimalField(max_digits=8, decimal_places=2)
+    nom_articulo = models.CharField(max_length=100)
+    dias_vencimiento = models.IntegerField()
+    sku_devolucion = models.DecimalField(max_digits=8, decimal_places=2)
+    sku_transito = models.DecimalField(max_digits=8, decimal_places=2)
+    sku_no_apta = models.DecimalField(max_digits=8, decimal_places=2)
+    sku_cantidad_total = models.DecimalField(max_digits=8, decimal_places=2)
+    estibas = models.DecimalField(max_digits=8, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'general_almacenamiento_sku'
