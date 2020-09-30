@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.utils.timezone import now
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from django.db.models import Sum
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, get_object_or_404
 from rest_framework.response import Response
-from analytics.models import DashboardCedi
+from analytics.models import DashboardCedi, Board
+from analytics.serializers import BoardSerializer
 from core.models import NegociosDim, LineasDim, MarcasDim, FactAlmacenamiento
 
 
@@ -15,23 +16,25 @@ def response_data(message, status=200, extra_data=None):
     return Response(status=status, data=data)
 
 
-class OccupationBoardObject(ListAPIView):
-    # serializer_class = BoardSerializer
+class OccupationBoardObject(RetrieveAPIView):
+    serializer_class = BoardSerializer
     permission_classes = (IsAuthenticatedOrTokenHasScope,)
     required_scopes = ['read']
 
     def get_queryset(self):
-        if self.kwargs['pk'] == 0:
-            values = NegociosDim.objects.all()
-        else:
-            values = NegociosDim.objects.filter(pk=self.kwargs['pk'])
-        return values
+        values = Board.objects.filter(pk=self.kwargs["pk"])
+        return get_object_or_404(values)
 
-    def list(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         instance = self.get_queryset()
-        # serialize = BoardSerializer(instance)
+        if self.kwargs['id'] == 0:
+            negocios = NegociosDim.objects.all()
+        else:
+            negocios = NegociosDim.objects.filter(cod_negocio=self.kwargs['id'])
+
+        serialize = BoardSerializer(instance)
         data = {}
-        for negocio in list(instance):
+        for negocio in list(negocios):
             lineas_negocio = LineasDim.objects.filter(cod_negocio=negocio.cod_negocio)
             data['NEGOCIO-' + str(negocio.cod_negocio)] = {}
             for linea in list(lineas_negocio):
@@ -49,27 +52,4 @@ class OccupationBoardObject(ListAPIView):
                             'MARCA-' + marca.nom_marca][
                             'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['estibas__sum']
 
-        return response_data(message='Board Ocupacion', extra_data={'graph': data})
-
-
-class ExpiredBoardObject(ListAPIView):
-    # serializer_class = BoardSerializer
-    permission_classes = (IsAuthenticatedOrTokenHasScope,)
-    required_scopes = ['read']
-
-    def get_queryset(self):
-        values = NegociosDim.objects.all()
-        return values
-
-    def list(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        # serialize = BoardSerializer(instance)
-        data = {}
-        for negocio in list(instance):
-            lineas_negocio = LineasDim.objects.filter(cod_negocio=negocio.cod_negocio)
-            data['NEGOCIO-' + str(negocio.cod_negocio)] = {}
-            for linea in list(lineas_negocio):
-                marcas_linea = MarcasDim.objects.filter(cod_linea=linea.cod_linea)
-                data['NEGOCIO-' + str(negocio.cod_negocio)]['LINEA-' + str(linea.cod_linea)] = {}
-
-        return response_data(message='Board Ocupacion', extra_data={'graph': data})
+        return response_data(message='Board Ocupacion', extra_data={'graph': data, 'board': serialize.data})

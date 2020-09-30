@@ -39,7 +39,7 @@ class BoardObject(RetrieveAPIView):
         if self.kwargs['pk'] is 2:  # vencimientos
             graphs = Boards().expired_products()
 
-        return response_data(message='Board Vencimiento ', extra_data={'graphs': graphs, 'board': serialize.data})
+        return response_data(message='Board Vencimiento', extra_data={'graphs': graphs, 'board': serialize.data})
 
 
 class CommentListCreate(ListCreateAPIView):
