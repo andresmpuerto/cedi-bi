@@ -15,10 +15,10 @@ schema_view = get_swagger_view(title=API_TITLE)
 
 admin.site.site_title = 'CeDi BI'
 admin.site.site_header = 'Administración del CeDi BI'
-# admin.site.unregister(AccessToken)
-# admin.site.unregister(Grant)
-# admin.site.unregister(RefreshToken)
-# admin.site.unregister(Application)
+admin.site.unregister(AccessToken)
+admin.site.unregister(Grant)
+admin.site.unregister(RefreshToken)
+admin.site.unregister(Application)
 
 urlpatterns = [
     url('', admin.site.urls),

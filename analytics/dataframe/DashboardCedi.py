@@ -69,5 +69,5 @@ class MakeDataFrameCedi:
         total_estibas_dev = total_estibas_dev_int + total_estibas_dev_ext
         print('Estibas Mci Devuelta : ' + str(total_estibas_dev))
         titles = ['Almc. Interno (Devolución)', 'Almc. Externo (Devolución)', 'En tránstio', 'No Apta']
-        values = [total_estibas_dev_int, total_estibas_dev, total_estibas_transito, total_estibas_no_apta]
+        values = [total_estibas_dev_int, total_estibas_dev_ext, total_estibas_transito, total_estibas_no_apta]
         return {'titles': titles, 'values': values}
