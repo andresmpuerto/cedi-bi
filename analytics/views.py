@@ -97,10 +97,11 @@ class MainBoardMix(ListAPIView):
                 .filter(estibas__gt=0) \
                 .values("categoria_id", "nom_categoria", "estibas", "cod_bodega", "nom_bodega")
         else:
+            print("start")
             values = DashboardBusiness.objects \
                 .filter(estibas__gt=0) \
                 .values("categoria_id", "nom_categoria", "estibas", "cod_bodega", "nom_bodega", "sku_transito",
-                        "sku_no_apta")
+                        "sku_no_apta", "cod_negocio", "nom_negocio")
 
         return values
 

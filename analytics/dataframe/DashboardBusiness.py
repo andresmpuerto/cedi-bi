@@ -9,12 +9,47 @@ class MakeDataFrameBusiness:
         self.df = pd.DataFrame(list(query))
 
     def frame_internal_external(self):
-        df2 = self.df[['nom_categoria', 'estibas']]
-        df2.columns = ['name', 'count']
-        df3 = df2.groupby(['name'], as_index=False).sum()
-        df3['y'] = df3['count'] / df3['count'].sum()
-        df3.round({'y': 2})
-        return {'records': df3.to_dict(orient='records'), 'total': df3['count'].sum()}
+        df = self.df[['cod_negocio', 'nom_negocio']]
+        negocios = df.drop_duplicates()
+        titles = list()
+        cvalues = [{}, {}, {}, {}]
+        cod = 0
+        c1 = []
+        c2 = []
+        c3 = []
+        c4 = []
+        df5 = self.df[['categoria_id', 'nom_categoria', 'cod_negocio', 'estibas']]
+        for negocio in negocios.to_dict(orient='records'):
+            titles.append(negocio['nom_negocio'])
+            cats = df5[df5['cod_negocio'] == negocio['cod_negocio']]
+            df3 = cats.groupby(['categoria_id', 'nom_categoria', 'cod_negocio'], as_index=False).sum()
+            print(df3)
+            for cat in df3.to_dict(orient='records'):
+                if cat['categoria_id'] is 1:
+                    c1.append(cat['estibas'])
+                    if cvalues[0] is {}:
+                        cvalues[0] = {'name': cat['nom_categoria'], 'data': c1}
+                    else:
+                        cvalues[0]['data'] = c1
+                elif cat['categoria_id'] is 2:
+                    c2.append(cat['estibas'])
+                    if cvalues[1] is {}:
+                        cvalues[1] = {'name': cat['nom_categoria'], 'data': c2}
+                    else:
+                        cvalues[1]['data'] = c2
+                elif cat['categoria_id'] is 3:
+                    c3.append(cat['estibas'])
+                    if cvalues[2] is {}:
+                        cvalues[2] = {'name': cat['nom_categoria'], 'data': c3}
+                    else:
+                        cvalues[2]['data'] = c3
+                else:
+                    c4.append(cat['estibas'])
+                    if cvalues[3] is {}:
+                        cvalues[3] = {'name': cat['nom_categoria'], 'data': c4}
+                    else:
+                        cvalues[3]['data'] = c4
+        return {'categories': titles, 'records': cvalues}
 
     def frame_total_external(self):
         df4 = self.df[self.df.nom_categoria.isin(['Externo Regular', 'Externo Devoluciones'])]
@@ -33,11 +68,11 @@ class MakeDataFrameBusiness:
         return {'total': total_estibas_internas, 'percent': round(porc_interno, 2)}
 
     def frame_storage_cedi(self):
-        print('\nAlmacenamiento x Bodega')
-        df2 = self.df[["nom_bodega", "nom_categoria", 'estibas']]
-        df2.columns = ['name', 'type', 'count']
+        print('\nAlmacenamiento x Negocio')
+        df2 = self.df[["nom_negocio", 'estibas']]
+        df2.columns = ['name', 'count']
         print(df2)
-        df3 = df2.groupby(['name', 'type'], as_index=False).sum()
+        df3 = df2.groupby(['name'], as_index=False).sum()
         total_estibas = df3['count'].sum()
         df3['y'] = df3['count'] / total_estibas
         df3.round({'y': 2})
