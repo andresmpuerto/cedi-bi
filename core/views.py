@@ -4,7 +4,7 @@ from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScop
 from django.db.models import Sum
 from rest_framework.generics import ListAPIView, RetrieveAPIView, get_object_or_404
 from rest_framework.response import Response
-from analytics.models import DashboardCedi, Board
+from analytics.models import DashboardCedi, Board, DashboardBusiness
 from analytics.serializers import BoardSerializer
 from core.models import NegociosDim, LineasDim, MarcasDim, FactAlmacenamiento
 
@@ -27,30 +27,34 @@ class OccupationBoardObject(RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         instance = self.get_queryset()
-        if self.kwargs['id'] == 0:
-            negocios = NegociosDim.objects.all()
-        else:
-            negocios = NegociosDim.objects.filter(cod_negocio=self.kwargs['id'])
+        negocios = DashboardBusiness.objects.filter(cod_bodega=self.kwargs['id']).values("cod_negocio", "nom_negocio") \
+            .distinct()
 
         serialize = BoardSerializer(instance)
         data = {}
         for negocio in list(negocios):
-            lineas_negocio = LineasDim.objects.filter(cod_negocio=negocio.cod_negocio)
-            data['NEGOCIO-' + str(negocio.cod_negocio)] = {}
+            lineas_negocio = DashboardBusiness.objects.filter(cod_negocio=negocio['cod_negocio'],
+                                                              cod_bodega=self.kwargs['id']).values("cod_linea",
+                                                                                                   "nom_linea")
+            cod = str(negocio['cod_negocio'])
+            data['NEGOCIO-' + cod] = {}
             for linea in list(lineas_negocio):
-                marcas_linea = MarcasDim.objects.filter(cod_linea=linea.cod_linea)
-                data['NEGOCIO-' + str(negocio.cod_negocio)]['LINEA-' + str(linea.cod_linea)] = {}
+                marcas_linea = DashboardBusiness.objects.filter(cod_linea=linea['cod_linea'],
+                                                                cod_negocio=cod,
+                                                                cod_bodega=self.kwargs['id']).values("cod_marca",
+                                                                                                     "nom_marca")
+                data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])] = {}
                 for marca in list(marcas_linea):
-                    data['NEGOCIO-' + str(negocio.cod_negocio)]['LINEA-' + str(linea.cod_linea)][
-                        'MARCA-' + marca.nom_marca] = {}
-                    articulos_marca = DashboardCedi.objects \
-                        .filter(cod_marca=marca.cod_marca) \
-                        .values("cod_articulo") \
-                        .annotate(Sum("estibas"))
+                    data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])][
+                        'MARCA-' + marca['nom_marca']] = {}
+                    articulos_marca = DashboardBusiness.objects.filter(cod_linea=linea['cod_linea'],
+                                                                       cod_negocio=cod,
+                                                                       cod_marca=marca['cod_marca'],
+                                                                       cod_bodega=self.kwargs['id']).values(
+                        "cod_articulo").annotate(Sum("sku_cantidad_total"))
                     for articulo in list(articulos_marca):
-                        data['NEGOCIO-' + str(negocio.cod_negocio)]['LINEA-' + str(linea.cod_linea)][
-                            'MARCA-' + marca.nom_marca][
-                            'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['estibas__sum']
+                        data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])]['MARCA-' + marca['nom_marca']][
+                            'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['sku_cantidad_total__sum']
 
         return response_data(message='Board Ocupacion', extra_data={'graph': data, 'board': serialize.data})
 
@@ -68,12 +72,9 @@ class OccupationCediBoardObject(RetrieveAPIView):
         instance = self.get_queryset()
         negocios = DashboardCedi.objects.filter(cod_bodega=self.kwargs['id']).values("cod_negocio", "nom_negocio") \
             .distinct()
-        print(negocios.query)
-        #print(negocios)
         serialize = BoardSerializer(instance)
         data = {}
         for negocio in list(negocios):
-         #   print(negocio)
             lineas_negocio = DashboardCedi.objects.filter(cod_negocio=negocio['cod_negocio'],
                                                           cod_bodega=self.kwargs['id']).values("cod_linea",
                                                                                                "nom_linea")
