@@ -27,25 +27,25 @@ class MakeDataFrameBusiness:
             for cat in df3.to_dict(orient='records'):
                 if cat['categoria_id'] is 1:
                     c1.append(cat['estibas'])
-                    if cvalues[0] is {}:
+                    if cvalues[0]:
                         cvalues[0] = {'name': cat['nom_categoria'], 'data': c1}
                     else:
                         cvalues[0]['data'] = c1
                 elif cat['categoria_id'] is 2:
                     c2.append(cat['estibas'])
-                    if cvalues[1] is {}:
+                    if cvalues[1]:
                         cvalues[1] = {'name': cat['nom_categoria'], 'data': c2}
                     else:
                         cvalues[1]['data'] = c2
                 elif cat['categoria_id'] is 3:
                     c3.append(cat['estibas'])
-                    if cvalues[2] is {}:
+                    if cvalues[2]:
                         cvalues[2] = {'name': cat['nom_categoria'], 'data': c3}
                     else:
                         cvalues[2]['data'] = c3
                 else:
                     c4.append(cat['estibas'])
-                    if cvalues[3] is {}:
+                    if cvalues[3]:
                         cvalues[3] = {'name': cat['nom_categoria'], 'data': c4}
                     else:
                         cvalues[3]['data'] = c4
