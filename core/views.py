@@ -53,3 +53,41 @@ class OccupationBoardObject(RetrieveAPIView):
                             'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['estibas__sum']
 
         return response_data(message='Board Ocupacion', extra_data={'graph': data, 'board': serialize.data})
+
+
+class OccupationCediBoardObject(RetrieveAPIView):
+    serializer_class = BoardSerializer
+    permission_classes = (IsAuthenticatedOrTokenHasScope,)
+    required_scopes = ['read']
+
+    def get_queryset(self):
+        values = Board.objects.filter(pk=self.kwargs["pk"])
+        return get_object_or_404(values)
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        negocios = DashboardCedi.objects.filter(cod_bodega=self.kwargs['id']).values("cod_negocio", "nom_negocio") \
+            .distinct()
+        print(negocios)
+        serialize = BoardSerializer(instance)
+        data = {}
+        for negocio in list(negocios):
+            print(negocio)
+            lineas_negocio = LineasDim.objects.filter(cod_negocio=negocio['cod_negocio'])
+            cod = str(negocio['cod_negocio'])
+            data['NEGOCIO-' + cod] = {}
+            for linea in list(lineas_negocio):
+                marcas_linea = MarcasDim.objects.filter(cod_linea=linea.cod_linea)
+                data['NEGOCIO-' + cod]['LINEA-' + str(linea.cod_linea)] = {}
+                for marca in list(marcas_linea):
+                    data['NEGOCIO-' + cod]['LINEA-' + str(linea.cod_linea)][
+                        'MARCA-' + marca.nom_marca] = {}
+                    articulos_marca = DashboardCedi.objects\
+                        .filter(cod_marca=marca.cod_marca) \
+                        .values("cod_articulo")\
+                        .annotate(Sum("estibas"))
+                    for articulo in list(articulos_marca):
+                        data['NEGOCIO-' + cod]['LINEA-' + str(linea.cod_linea)]['MARCA-' + marca.nom_marca][
+                            'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['estibas__sum']
+
+        return response_data(message='Board Ocupacion', extra_data={'graph': data, 'board': serialize.data})
