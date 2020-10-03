@@ -29,13 +29,13 @@ class Dimensions:
         # try:
         print('Actualización Categoria Bodegas')
         sql_query = sql.text(
-            "UPDATE core_bodegasdimttemp SET categoria_id = 1 WHERE cod_bodega IN ('1','59','71','BF','I7','T8');")
+            "UPDATE core_bodegasdimttemp SET categoria_id = 1 WHERE cod_bodega IN ('1','BF','I7','T8');")
         self.engine.execute(sql_query)
         sql_query = sql.text("COMMIT;")
         self.engine.execute(sql_query)
 
         sql_query = sql.text(
-            "UPDATE core_bodegasdimttemp SET categoria_id = 3 WHERE cod_bodega IN ('8','88','C7','C8','C9');")
+            "UPDATE core_bodegasdimttemp SET categoria_id = 3 WHERE cod_bodega IN ('8','88','C7','C8','C9','71');")
         self.engine.execute(sql_query)
         sql_query = sql.text("COMMIT;")
         self.engine.execute(sql_query)
@@ -46,7 +46,7 @@ class Dimensions:
         sql_query = sql.text("COMMIT;")
         self.engine.execute(sql_query)
 
-        sql_query = sql.text("UPDATE core_bodegasdimttemp SET categoria_id = 4 WHERE cod_bodega IN ('43','C5');")
+        sql_query = sql.text("UPDATE core_bodegasdimttemp SET categoria_id = 4 WHERE cod_bodega IN ('43','C5','59');")
         self.engine.execute(sql_query)
         sql_query = sql.text("COMMIT;")
         self.engine.execute(sql_query)
