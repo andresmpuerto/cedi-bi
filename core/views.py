@@ -68,11 +68,12 @@ class OccupationCediBoardObject(RetrieveAPIView):
         instance = self.get_queryset()
         negocios = DashboardCedi.objects.filter(cod_bodega=self.kwargs['id']).values("cod_negocio", "nom_negocio") \
             .distinct()
-        print(negocios)
+        print(negocios.query)
+        #print(negocios)
         serialize = BoardSerializer(instance)
         data = {}
         for negocio in list(negocios):
-            print(negocio)
+         #   print(negocio)
             lineas_negocio = DashboardCedi.objects.filter(cod_negocio=negocio['cod_negocio'],
                                                           cod_bodega=self.kwargs['id']).values("cod_linea",
                                                                                                "nom_linea")

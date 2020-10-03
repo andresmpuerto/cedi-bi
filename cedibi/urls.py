@@ -32,7 +32,7 @@ urlpatterns = [
     # #####
     path('api/v1/roles/<int:pk>/dashboard', MainBoardMix.as_view()),
     path('api/v1/boards/<int:pk>/occupation/<int:id>', OccupationBoardObject.as_view()),
-    path('api/v1/boards/<int:pk>/cedi/occupation/<int:id>', OccupationCediBoardObject.as_view()),
+    path('api/v1/boards/<int:pk>/cedi/occupation/<str:id>', OccupationCediBoardObject.as_view()),
     # ######
     path('api/v1', include('rest_framework.urls', namespace='rest_framework')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
