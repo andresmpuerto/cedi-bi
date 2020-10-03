@@ -27,31 +27,30 @@ class OccupationBoardObject(RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         instance = self.get_queryset()
-        negocios = DashboardBusiness.objects.filter(cod_bodega=self.kwargs['id']).values("cod_negocio", "nom_negocio") \
+        negocios = DashboardBusiness.objects.filter(cod_negocio=self.kwargs['id']) \
+            .values("cod_negocio", "nom_negocio") \
             .distinct()
 
         serialize = BoardSerializer(instance)
         data = {}
         for negocio in list(negocios):
-            lineas_negocio = DashboardBusiness.objects.filter(cod_negocio=negocio['cod_negocio'],
-                                                              cod_bodega=self.kwargs['id']).values("cod_linea",
-                                                                                                   "nom_linea")
+            lineas_negocio = DashboardBusiness.objects.filter(cod_negocio=negocio['cod_negocio']).values("cod_linea",
+                                                                                                         "nom_linea")
             cod = str(negocio['cod_negocio'])
             data['NEGOCIO-' + cod] = {}
             for linea in list(lineas_negocio):
                 marcas_linea = DashboardBusiness.objects.filter(cod_linea=linea['cod_linea'],
-                                                                cod_negocio=cod,
-                                                                cod_bodega=self.kwargs['id']).values("cod_marca",
-                                                                                                     "nom_marca")
+                                                                cod_negocio=cod).values("cod_marca",
+                                                                                        "nom_marca")
                 data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])] = {}
                 for marca in list(marcas_linea):
                     data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])][
                         'MARCA-' + marca['nom_marca']] = {}
                     articulos_marca = DashboardBusiness.objects.filter(cod_linea=linea['cod_linea'],
                                                                        cod_negocio=cod,
-                                                                       cod_marca=marca['cod_marca'],
-                                                                       cod_bodega=self.kwargs['id']).values(
-                        "cod_articulo").annotate(Sum("sku_cantidad_total"))
+                                                                       cod_marca=marca['cod_marca']) \
+                        .values("cod_articulo") \
+                        .annotate(Sum("sku_cantidad_total"))
                     for articulo in list(articulos_marca):
                         data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])]['MARCA-' + marca['nom_marca']][
                             'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['sku_cantidad_total__sum']
