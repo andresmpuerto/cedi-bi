@@ -43,9 +43,9 @@ class OccupationBoardObject(RetrieveAPIView):
                 for marca in list(marcas_linea):
                     data['NEGOCIO-' + str(negocio.cod_negocio)]['LINEA-' + str(linea.cod_linea)][
                         'MARCA-' + marca.nom_marca] = {}
-                    articulos_marca = DashboardCedi.objects\
+                    articulos_marca = DashboardCedi.objects \
                         .filter(cod_marca=marca.cod_marca) \
-                        .values("cod_articulo")\
+                        .values("cod_articulo") \
                         .annotate(Sum("estibas"))
                     for articulo in list(articulos_marca):
                         data['NEGOCIO-' + str(negocio.cod_negocio)]['LINEA-' + str(linea.cod_linea)][
@@ -73,21 +73,27 @@ class OccupationCediBoardObject(RetrieveAPIView):
         data = {}
         for negocio in list(negocios):
             print(negocio)
-            lineas_negocio = LineasDim.objects.filter(cod_negocio=negocio['cod_negocio'])
+            lineas_negocio = DashboardCedi.objects.filter(cod_negocio=negocio['cod_negocio'],
+                                                          cod_bodega=self.kwargs['id']).values("cod_linea",
+                                                                                               "nom_linea")
             cod = str(negocio['cod_negocio'])
             data['NEGOCIO-' + cod] = {}
             for linea in list(lineas_negocio):
-                marcas_linea = MarcasDim.objects.filter(cod_linea=linea.cod_linea)
-                data['NEGOCIO-' + cod]['LINEA-' + str(linea.cod_linea)] = {}
+                marcas_linea = DashboardCedi.objects.filter(cod_linea=linea['cod_linea'],
+                                                            cod_negocio=cod,
+                                                            cod_bodega=self.kwargs['id']).values("cod_marca",
+                                                                                                 "nom_marca")
+                data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])] = {}
                 for marca in list(marcas_linea):
-                    data['NEGOCIO-' + cod]['LINEA-' + str(linea.cod_linea)][
-                        'MARCA-' + marca.nom_marca] = {}
-                    articulos_marca = DashboardCedi.objects\
-                        .filter(cod_marca=marca.cod_marca) \
-                        .values("cod_articulo")\
-                        .annotate(Sum("estibas"))
+                    data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])][
+                        'MARCA-' + marca['nom_marca']] = {}
+                    articulos_marca = DashboardCedi.objects.filter(cod_linea=linea['cod_linea'],
+                                                                   cod_negocio=cod,
+                                                                   cod_marca=marca['cod_marca'],
+                                                                   cod_bodega=self.kwargs['id']).values(
+                        "cod_articulo").annotate(Sum("estibas"))
                     for articulo in list(articulos_marca):
-                        data['NEGOCIO-' + cod]['LINEA-' + str(linea.cod_linea)]['MARCA-' + marca.nom_marca][
+                        data['NEGOCIO-' + cod]['LINEA-' + str(linea['cod_linea'])]['MARCA-' + marca['nom_marca']][
                             'ARTICULO-' + str(articulo['cod_articulo'])] = articulo['estibas__sum']
 
         return response_data(message='Board Ocupacion', extra_data={'graph': data, 'board': serialize.data})
